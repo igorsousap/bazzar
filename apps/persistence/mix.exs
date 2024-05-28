@@ -40,7 +40,9 @@ defmodule Persistence.MixProject do
       {:phoenix_pubsub, "~> 2.1"},
       {:ecto_sql, "~> 3.10"},
       {:postgrex, ">= 0.0.0"},
-      {:jason, "~> 1.2"}
+      {:jason, "~> 1.2"},
+      # Biblioteca para validação de CPF e CNPJ
+      {:brcpfcnpj, "~> 0.1.0"}
     ]
   end
 

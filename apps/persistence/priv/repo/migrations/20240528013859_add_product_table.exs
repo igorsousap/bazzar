@@ -7,6 +7,7 @@ defmodule Persistence.Repo.Migrations.AddProductTable do
     create table(:products, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :product_name, :string, required: true
+      add :cod_product, :string, require: true
 
       add :id_store,
           references(:stores, on_delete: :delete_all, column: :id, type: :uuid),
@@ -14,14 +15,14 @@ defmodule Persistence.Repo.Migrations.AddProductTable do
 
       add :description, :text, required: true
       add :size, :string, required: true
-      add :value, :integer, required: true
+      add :value, :decimal, required: true
       add :quantity, :integer, required: true
       add :picture, :string, required: true
 
       timestamps()
     end
 
-    create unique_index(:products, [:product_name], name: :product_name_index)
+    create unique_index(:products, [:cod_product], name: :cod_product_index)
   end
 
   defp create_size_types_enum do
