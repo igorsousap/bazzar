@@ -9,15 +9,13 @@ defmodule Persistence.Repo.Migrations.AddStoreTable do
       add :adress, :string, required: true
       add :neighborhood, :string, required: true
       add :number, :integer, required: true
-      add :cep, :integer, required: true
-      add :cnpj, :integer, required: true
+      add :cep, :string, required: true
+      add :cnpj, :string, required: true
+      add :phone, :string, require: true
 
       timestamps()
     end
 
-    create unique_index(:stores, [:name_store, :cnpj],
-             name: :name_store_index,
-             name: :cnpj_store_index
-           )
+    create unique_index(:stores, [:name_store, :cnpj], name: :store_index)
   end
 end
