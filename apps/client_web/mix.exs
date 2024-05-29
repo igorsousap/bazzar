@@ -41,7 +41,8 @@ defmodule ClientWeb.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
-      {:bandit, "~> 1.2"}
+      {:bandit, "~> 1.2"},
+      {:persistence, in_umbrella: true}
     ]
   end
 

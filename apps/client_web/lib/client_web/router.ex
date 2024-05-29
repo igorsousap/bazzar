@@ -7,5 +7,7 @@ defmodule ClientWeb.Router do
 
   scope "/api", ClientWeb do
     pipe_through :api
+
+    post "/store", StoreControlle, :create
   end
 end
