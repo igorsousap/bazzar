@@ -62,6 +62,6 @@ defmodule Persistence.Stores.Schemas.Store do
   defp validate_cnpj(changeset),
     do:
       Brcpfcnpj.Changeset.validate_cnpj(changeset, :cnpj,
-        message: {"has already been taken", [index: :invalid]}
+        message: {"invalid cnpj", [index: :invalid]}
       )
 end

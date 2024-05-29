@@ -1,4 +1,4 @@
-defmodule ClientWeb.StoreControlle do
+defmodule ClientWeb.StoreController do
   use ClientWeb, :controller
 
   require Logger
@@ -23,6 +23,40 @@ defmodule ClientWeb.StoreControlle do
 
         error
     end
+  end
+
+  def index(conn, params) do
+    page = String.to_integer(params["page"])
+    page_size = String.to_integer(params["page_size"])
+    stores = Stores.get_all_stores(page, page_size)
+
+    conn
+    |> put_status(:ok)
+    |> render(:store_index, layout: false, store: stores)
+  end
+
+  def get_store_by_name(conn, params) do
+    store = Stores.get_store_by_name(params["name_store"])
+
+    conn
+    |> put_status(:ok)
+    |> render(:store, layout: false, store: store)
+  end
+
+  def get_store_by_cnpj(conn, params) do
+    store = Stores.get_store_by_cnpj(params["cnpj"])
+
+    conn
+    |> put_status(:ok)
+    |> render(:store, layout: false, store: store)
+  end
+
+  def update(conn, params) do
+    {:ok, store} = Stores.update_by_name_store(params["name_store"], params)
+
+    conn
+    |> put_status(:ok)
+    |> render(:store, layout: false, store: store)
   end
 
   defp build_store_params(params) do

@@ -21,10 +21,11 @@ defmodule Persistence.Products.Products do
   """
   @spec create(String.t(), map()) :: {:ok, Product.t()} | {:error, Ecto.Changeset.t()}
   def create(name_store, attrs) do
-    with {:ok, %Persistence.Stores.Schemas.Store{id: id}} <- Stores.get_store_by_name(name_store),
+    with %Persistence.Stores.Schemas.Store{id: id} <- Stores.get_store_by_name(name_store),
          product_with_id <- Map.put(attrs, :id_store, id) do
       product_with_id
       |> Product.changeset()
+      |> IO.inspect(label: :changeset)
       |> Repo.insert()
     end
   end
@@ -33,14 +34,16 @@ defmodule Persistence.Products.Products do
   Example
   iex> Persistence.Products.Products.get_all_products_store("IgorStore")
   """
-
-  @spec get_all_products_store(String.t()) :: List.t() | []
-  def get_all_products_store(name_store) do
-    {:ok, %Persistence.Stores.Schemas.Store{id: id}} = Stores.get_store_by_name(name_store)
+  @spec get_all_products_store(String.t(), Integer.t(), Integer.t()) :: List.t() | []
+  def get_all_products_store(name_store, page, page_size) do
+    %Persistence.Stores.Schemas.Store{id: id} = Stores.get_store_by_name(name_store)
 
     Product
     |> from()
-    |> where([pt], pt.id == ^id)
+    |> order_by([pt], desc: pt.inserted_at)
+    |> limit(^page_size)
+    |> offset((^page - 1) * ^page_size)
+    |> where([pt], pt.id_store == ^id)
     |> Repo.all()
   end
 

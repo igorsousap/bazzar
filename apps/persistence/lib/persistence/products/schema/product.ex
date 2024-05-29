@@ -32,7 +32,7 @@ defmodule Persistence.Products.Schema.Product do
     field(:quantity, :integer)
     field(:picture, :string)
 
-    belongs_to(:stores, Store)
+    has_many(:stores, Store)
 
     timestamps()
   end
