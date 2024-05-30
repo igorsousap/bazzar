@@ -16,5 +16,7 @@ defmodule ClientWeb.Router do
 
     post "/product", ProductController, :create
     get "/product/:name_store", ProductController, :products_by_store
+    get "/product/cod/:cod_product", ProductController, :product_by_cod
+    put "/product", ProductController, :update
   end
 end

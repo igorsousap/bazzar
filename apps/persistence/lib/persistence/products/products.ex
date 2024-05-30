@@ -66,10 +66,12 @@ defmodule Persistence.Products.Products do
   """
   @spec update(String.t(), map()) :: {:ok, Product.t()} | {:error, Ecto.Changeset.t()}
   def update(cod_product, attrs) do
-    {:ok, product} = get_by_cod_product(cod_product)
+    product = get_by_cod_product(cod_product)
 
     product
     |> Product.changeset(attrs)
+    |> IO.inspect()
     |> Repo.update()
+    |> IO.inspect()
   end
 end

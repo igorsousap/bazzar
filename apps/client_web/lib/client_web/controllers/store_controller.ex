@@ -26,29 +26,46 @@ defmodule ClientWeb.StoreController do
   end
 
   def index(conn, params) do
-    page = String.to_integer(params["page"])
-    page_size = String.to_integer(params["page_size"])
-    stores = Stores.get_all_stores(page, page_size)
+    {page, page_size} = build_pagination(params["page"], params["page_size"])
 
-    conn
-    |> put_status(:ok)
-    |> render(:store_index, layout: false, store: stores)
+    case Stores.get_all_stores(page, page_size) do
+      nil ->
+        {:error, :not_found}
+        Logger.error("Could not find any store.")
+
+      stores ->
+        conn
+        |> put_status(:ok)
+        |> render(:store_index, layout: false, store: stores)
+    end
   end
 
   def get_store_by_name(conn, params) do
-    store = Stores.get_store_by_name(params["name_store"])
+    case Stores.get_store_by_name(params["name_store"]) do
+      nil ->
+        Logger.error("Could not find store with attributes #{inspect(params)}.")
 
-    conn
-    |> put_status(:ok)
-    |> render(:store, layout: false, store: store)
+        {:error, :not_found}
+
+      store ->
+        conn
+        |> put_status(:ok)
+        |> render(:store, layout: false, store: store)
+    end
   end
 
   def get_store_by_cnpj(conn, params) do
-    store = Stores.get_store_by_cnpj(params["cnpj"])
+    case Stores.get_store_by_cnpj(params["cnpj"]) do
+      nil ->
+        Logger.error("Could not find store with attributes #{inspect(params)}.")
 
-    conn
-    |> put_status(:ok)
-    |> render(:store, layout: false, store: store)
+        {:error, :not_found}
+
+      store ->
+        conn
+        |> put_status(:ok)
+        |> render(:store, layout: false, store: store)
+    end
   end
 
   def update(conn, params) do
@@ -72,5 +89,12 @@ defmodule ClientWeb.StoreController do
     }
 
     {:ok, params}
+  end
+
+  defp build_pagination(page, page_size) do
+    page = String.to_integer(page)
+    page_size = String.to_integer(page_size)
+
+    {page, page_size}
   end
 end
