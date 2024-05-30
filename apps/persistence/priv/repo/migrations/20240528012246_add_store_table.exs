@@ -16,6 +16,7 @@ defmodule Persistence.Repo.Migrations.AddStoreTable do
       timestamps()
     end
 
-    create unique_index(:stores, [:name_store, :cnpj], name: :store_index)
+    create unique_index(:stores, [:name_store], name: :store_name_index)
+    create unique_index(:stores, [:cnpj], name: :store_cnpj_index)
   end
 end

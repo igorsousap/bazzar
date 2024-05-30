@@ -50,11 +50,18 @@ defmodule Persistence.Stores.Schemas.Store do
     store
     |> cast(attrs, @fields)
     |> validate_required(@fields)
-    |> unique_constraint([:name_store, :cnpj], name: :store_index)
+    |> unique_constraint([:name_store], name: :store_name_index)
+    |> unique_constraint([:cnpj], name: :store_cnpj_index)
     |> validate_cnpj()
-    |> validate_format(:cep, ~r/^\d{5}-\d{3}$/, message: "invalid cep")
-    |> validate_format(:phone, ~r/^\d{2}\d{4,5}\d{4}$/, message: "invalid phone")
+    |> validate_format(:cep, ~r/^\d{5}-\d{3}$/, message: {"invalid_cep", [index: :invalid]})
+    |> validate_format(:phone, ~r/^\d{2}\d{4,5}\d{4}$/,
+      message: {"invalid_phone", [index: :invalid]}
+    )
   end
 
-  defp validate_cnpj(changeset), do: Brcpfcnpj.Changeset.validate_cnpj(changeset, :cnpj)
+  defp validate_cnpj(changeset),
+    do:
+      Brcpfcnpj.Changeset.validate_cnpj(changeset, :cnpj,
+        message: {"invalid cnpj", [index: :invalid]}
+      )
 end

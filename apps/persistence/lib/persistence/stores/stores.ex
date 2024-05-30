@@ -29,7 +29,7 @@ defmodule Persistence.Stores.Stores do
   Example
   iex> Persistence.Stores.Stores.get_store_by_name("IgorStore")
   """
-  @spec get_store_by_name(String.t()) :: {:ok, Store.t()} | nil
+  @spec get_store_by_name(String.t()) :: Store.t() | nil
   def get_store_by_name(name_store) do
     Store
     |> from()
@@ -41,7 +41,7 @@ defmodule Persistence.Stores.Stores do
   Example
   iex> Persistence.Stores.Stores.get_store_by_cnpj("07941071000138")
   """
-  @spec get_store_by_cnpj(String.t()) :: {:ok, Store.t()} | nil
+  @spec get_store_by_cnpj(String.t()) :: Store.t() | nil
   def get_store_by_cnpj(cnpj) do
     Store
     |> from()
@@ -53,10 +53,13 @@ defmodule Persistence.Stores.Stores do
   Example
   iex> Persistence.Stores.Stores.get_all_stores()
   """
-  @spec get_all_stores() :: List.t() | []
-  def get_all_stores() do
+  @spec get_all_stores(Integer.t(), Integer.t()) :: List.t() | []
+  def get_all_stores(page, page_size) do
     Store
     |> from()
+    |> order_by([st], desc: st.inserted_at)
+    |> limit(^page_size)
+    |> offset((^page - 1) * ^page_size)
     |> Repo.all()
   end
 
