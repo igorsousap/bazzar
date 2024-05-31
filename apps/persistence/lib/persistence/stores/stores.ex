@@ -1,7 +1,7 @@
 defmodule Persistence.Stores.Stores do
   import Ecto.Query
 
-  alias Persistence.Stores.Schemas.Store
+  alias Persistence.Stores.Schema.Store
   alias Persistence.Repo
 
   @doc """
@@ -74,4 +74,6 @@ defmodule Persistence.Stores.Stores do
     |> Store.changeset(attrs)
     |> Repo.update()
   end
+
+  def delete(id), do: Repo.get!(Store, id) |> Repo.delete()
 end

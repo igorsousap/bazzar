@@ -3,7 +3,7 @@ defmodule Persistence.Products.Schema.Product do
 
   import Ecto.Changeset
 
-  alias Persistence.Stores.Schemas.Store
+  alias Persistence.Stores.Schema.Store
 
   @type size_types :: :xs | :s | :m | :l | :xl | :xxl | :xxxl
   @type t :: %__MODULE__{
