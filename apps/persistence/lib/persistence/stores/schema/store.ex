@@ -1,4 +1,4 @@
-defmodule Persistence.Stores.Schemas.Store do
+defmodule Persistence.Stores.Schema.Store do
   use Ecto.Schema
 
   import Ecto.Changeset
@@ -33,7 +33,7 @@ defmodule Persistence.Stores.Schemas.Store do
 
   @doc """
   Example
-  iex> Persistence.Stores.Schemas.Store.changeset(
+  iex> Persistence.Stores.Schema.Store.changeset(
           %{
           name_store: "IgorStore",
           description:  "Loja focada em vendas de roupa de academia",
@@ -42,7 +42,7 @@ defmodule Persistence.Stores.Schemas.Store do
           number: 99,
           cep: "62010-140",
           cnpj: "07941071000138",
-          phone: "88999595515"
+          phone: "889995955155"
            })
   """
   @spec changeset(:__MODULE__.t(), map()) :: Ecto.Changeset.t()
@@ -53,10 +53,8 @@ defmodule Persistence.Stores.Schemas.Store do
     |> unique_constraint([:name_store], name: :store_name_index)
     |> unique_constraint([:cnpj], name: :store_cnpj_index)
     |> validate_cnpj()
-    |> validate_format(:cep, ~r/^\d{5}-\d{3}$/, message: {"invalid_cep", [index: :invalid]})
-    |> validate_format(:phone, ~r/^\d{2}\d{4,5}\d{4}$/,
-      message: {"invalid_phone", [index: :invalid]}
-    )
+    |> validate_format(:cep, ~r/^\d{5}-\d{3}$/, message: "invalid cep")
+    |> validate_format(:phone, ~r/^\d{2}\d{4,5}\d{4}$/, message: "invalid phone")
   end
 
   defp validate_cnpj(changeset),

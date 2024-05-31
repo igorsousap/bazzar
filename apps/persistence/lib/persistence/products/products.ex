@@ -2,6 +2,7 @@ defmodule Persistence.Products.Products do
   import Ecto.Query
 
   alias Persistence.Products.Schema.Product
+  alias Persistence.Stores.Schema.Store
   alias Persistence.Stores.Stores
   alias Persistence.Repo
 
@@ -21,11 +22,10 @@ defmodule Persistence.Products.Products do
   """
   @spec create(String.t(), map()) :: {:ok, Product.t()} | {:error, Ecto.Changeset.t()}
   def create(name_store, attrs) do
-    with %Persistence.Stores.Schemas.Store{id: id} <- Stores.get_store_by_name(name_store),
+    with %Store{id: id} <- Stores.get_store_by_name(name_store),
          product_with_id <- Map.put(attrs, :id_store, id) do
       product_with_id
       |> Product.changeset()
-      |> IO.inspect(label: :changeset)
       |> Repo.insert()
     end
   end
@@ -36,7 +36,7 @@ defmodule Persistence.Products.Products do
   """
   @spec get_all_products_store(String.t(), Integer.t(), Integer.t()) :: List.t() | []
   def get_all_products_store(name_store, page, page_size) do
-    %Persistence.Stores.Schemas.Store{id: id} = Stores.get_store_by_name(name_store)
+    %Persistence.Stores.Schema.Store{id: id} = Stores.get_store_by_name(name_store)
 
     Product
     |> from()
@@ -70,8 +70,6 @@ defmodule Persistence.Products.Products do
 
     product
     |> Product.changeset(attrs)
-    |> IO.inspect()
     |> Repo.update()
-    |> IO.inspect()
   end
 end

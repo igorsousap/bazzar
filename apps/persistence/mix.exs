@@ -42,7 +42,9 @@ defmodule Persistence.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:jason, "~> 1.2"},
       # Biblioteca para validação de CPF e CNPJ
-      {:brcpfcnpj, "~> 0.1.0"}
+      {:brcpfcnpj, "~> 0.1.0"},
+      # For Testing modules
+      {:ex_machina, "~> 2.7.0", only: :test}
     ]
   end
 
