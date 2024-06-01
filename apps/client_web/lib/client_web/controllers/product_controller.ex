@@ -51,11 +51,19 @@ defmodule ClientWeb.ProductController do
   end
 
   def update(conn, params) do
-    {:ok, product} = Products.update(params["cod_product"], params)
+    case Products.update(params["cod_product"], params) do
+      {:ok, product} ->
+        conn
+        |> put_status(:ok)
+        |> render(:product, layout: false, product: product)
 
-    conn
-    |> put_status(:ok)
-    |> render(:product, layout: false, product: product)
+      error ->
+        Logger.error(
+          "Could not update store with attributes #{inspect(params)}. Error: #{inspect(error)}"
+        )
+
+        error
+    end
   end
 
   defp build_product_params(params) do
