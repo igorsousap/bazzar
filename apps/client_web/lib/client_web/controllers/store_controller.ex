@@ -30,8 +30,8 @@ defmodule ClientWeb.StoreController do
 
     case Stores.get_all_stores(page, page_size) do
       nil ->
-        {:error, :not_found}
         Logger.error("Could not find any store.")
+        {:error, :not_found}
 
       stores ->
         conn
@@ -69,11 +69,19 @@ defmodule ClientWeb.StoreController do
   end
 
   def update(conn, params) do
-    {:ok, store} = Stores.update_by_name_store(params["name_store"], params)
+    case Stores.update_by_name_store(params["name_store"], params) do
+      {:ok, store} ->
+        conn
+        |> put_status(:ok)
+        |> render(:store, layout: false, store: store)
 
-    conn
-    |> put_status(:ok)
-    |> render(:store, layout: false, store: store)
+      error ->
+        Logger.error(
+          "Could not update store with attributes #{inspect(params)}. Error: #{inspect(error)}"
+        )
+
+        error
+    end
   end
 
   defp build_store_params(params) do
