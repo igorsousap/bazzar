@@ -10,6 +10,7 @@ defmodule Persistence.MixProject do
       deps_path: "../../deps",
       lockfile: "../../mix.lock",
       elixir: "~> 1.14",
+      consolidate_protocols: Mix.env() != :test,
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
@@ -41,6 +42,8 @@ defmodule Persistence.MixProject do
       {:ecto_sql, "~> 3.10"},
       {:postgrex, ">= 0.0.0"},
       {:jason, "~> 1.2"},
+      # hash password
+      {:bcrypt_elixir, "~> 3.0"},
       # Biblioteca para validação de CPF e CNPJ
       {:brcpfcnpj, "~> 0.1.0"},
       # For Testing modules
