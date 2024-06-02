@@ -18,14 +18,18 @@ defmodule Persistence.Users.Users do
   """
   @spec register_user(map()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def register_user(attrs) do
-    {:ok, user} =
+    changeset =
       attrs
       |> User.changeset()
-      |> Repo.insert()
 
-    register_token(user)
+    case Repo.insert(changeset) do
+      {:error, changeset} ->
+        {:error, changeset}
 
-    {:ok, user}
+      {:ok, user} ->
+        register_token(user)
+        {:ok, user}
+    end
   end
 
   @doc """
@@ -33,7 +37,8 @@ defmodule Persistence.Users.Users do
 
       iex> Persistence.Users.Users.get_user_by_email_and_password("igorsousapinto140@gmail.com", "Igorsousa123@")
   """
-  @spec get_user_by_email_and_password(String.t(), String.t()) :: %Persistence.Users.Schema.User{}
+  @spec get_user_by_email_and_password(String.t(), String.t()) ::
+          %Persistence.Users.Schema.User{} | nil
   def get_user_by_email_and_password(email, password)
       when is_binary(email) and is_binary(password) do
     user = Repo.get_by(User, email: email)
@@ -59,7 +64,7 @@ defmodule Persistence.Users.Users do
 
       %Persistence.Users.Schema.User{} ->
         user
-        |> User.changeset(attrs)
+        |> User.email_changeset(attrs)
         |> Repo.update()
     end
   end
@@ -83,7 +88,7 @@ defmodule Persistence.Users.Users do
 
       %Persistence.Users.Schema.User{} ->
         user
-        |> User.changeset(attrs)
+        |> User.password_changeset(attrs)
         |> Repo.update()
     end
   end
@@ -103,11 +108,18 @@ defmodule Persistence.Users.Users do
     end
   end
 
-  defp register_token(%Persistence.Users.Schema.User{id: id}) do
+  defp register_token(%Persistence.Users.Schema.User{id: id} = user) do
+    UserToken
+    |> from()
+    |> where([ut], ut.user_id == ^id)
+    |> Repo.delete_all()
+
     id
     |> UserToken.build_session_token()
     |> UserToken.changeset()
     |> Repo.insert()
+
+    {:ok, user}
   end
 
   defp verify_token(id) do

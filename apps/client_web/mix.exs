@@ -43,7 +43,8 @@ defmodule ClientWeb.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:bandit, "~> 1.2"},
-      {:persistence, in_umbrella: true}
+      {:persistence, in_umbrella: true},
+      {:guardian, "~> 2.0"}
     ]
   end
 
