@@ -75,5 +75,18 @@ defmodule Persistence.Stores.Stores do
     |> Repo.update()
   end
 
+  def verify_id_store(user_id) do
+    store = Repo.get_by(Store, user_id: user_id)
+
+    case store do
+      nil -> nil
+      _ -> {:ok, store}
+    end
+  end
+
+  @spec get_store_by_id(Binary.t()) :: {:ok, Store.t()} | {:error, Ecto.Changeset.t()}
+  def get_store_by_id(id), do: Repo.get!(Store, id)
+
+  @spec delete(Binary.t()) :: {:ok, Store.t()} | {:error, Ecto.Changeset.t()}
   def delete(id), do: Repo.get!(Store, id) |> Repo.delete()
 end

@@ -54,10 +54,16 @@ defmodule Persistence.Products.Products do
 
   @spec get_by_cod_product(String.t()) :: {:ok, Product.t()} | nil
   def get_by_cod_product(cod_product) do
-    Product
-    |> from()
-    |> where([pt], pt.cod_product == ^cod_product)
-    |> Repo.one()
+    product =
+      Product
+      |> from()
+      |> where([pt], pt.cod_product == ^cod_product)
+      |> Repo.one()
+
+    case product do
+      nil -> {:error, :not_found}
+      product -> product
+    end
   end
 
   @doc """
@@ -66,10 +72,14 @@ defmodule Persistence.Products.Products do
   """
   @spec update(String.t(), map()) :: {:ok, Product.t()} | {:error, Ecto.Changeset.t()}
   def update(cod_product, attrs) do
-    product = get_by_cod_product(cod_product)
+    case get_by_cod_product(cod_product) do
+      {:error, :not_found} ->
+        {:error, :not_found}
 
-    product
-    |> Product.changeset(attrs)
-    |> Repo.update()
+      product ->
+        product
+        |> Product.changeset(attrs)
+        |> Repo.update()
+    end
   end
 end

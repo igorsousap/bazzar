@@ -5,22 +5,31 @@ defmodule ClientWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :auth do
+    plug ClientWeb.Plugs.AuthPipeline
+  end
+
   scope "/api/store", ClientWeb do
-    pipe_through :api
+    pipe_through [:api, :auth]
 
     post "/", StoreController, :create
-    get "/", StoreController, :index
-    get "/store-name/:name_store", StoreController, :get_store_by_name
-    get "/store-cnpj/:cnpj", StoreController, :get_store_by_cnpj
     put "/", StoreController, :update
   end
 
-  scope "/api/product", ClientWeb do
+  scope "/api", ClientWeb do
     pipe_through :api
 
+    get "/stores", StoreController, :index
+    get "/store-name/:name_store", StoreController, :get_store_by_name
+    get "/store-cnpj/:cnpj", StoreController, :get_store_by_cnpj
+  end
+
+  scope "/api/product", ClientWeb do
+    pipe_through [:api, :auth]
+
     post "/", ProductController, :create
-    get "/:name_store", ProductController, :products_by_store
-    get "/cod/:cod_product", ProductController, :product_by_cod
+    get "/store", ProductController, :products_by_store
+    get "/store/cod/:cod_product", ProductController, :product_by_cod
     put "/", ProductController, :update
   end
 
@@ -31,5 +40,11 @@ defmodule ClientWeb.Router do
     get "/", UserController, :get_user
     put "/", UserController, :change_email_or_password
     post "/new-token", UserController, :generate_new_token
+  end
+
+  scope "/api/session", ClientWeb do
+    pipe_through :api
+
+    post "/", SessionController, :create
   end
 end
