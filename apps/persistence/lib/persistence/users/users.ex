@@ -32,6 +32,9 @@ defmodule Persistence.Users.Users do
     end
   end
 
+  @spec get_user_by_id(Binary.t()) :: %Persistence.Users.Schema.User{} | nil
+  def get_user_by_id(id), do: User |> Repo.get(id)
+
   @doc """
   ## Examples
 
@@ -42,7 +45,8 @@ defmodule Persistence.Users.Users do
   def get_user_by_email_and_password(email, password)
       when is_binary(email) and is_binary(password) do
     user = Repo.get_by(User, email: email)
-    if User.valid_password?(user, password), do: user
+
+    if User.valid_password?(user, password), do: {:ok, user}
   end
 
   @doc """
@@ -59,10 +63,10 @@ defmodule Persistence.Users.Users do
       |> Repo.one()
 
     case verify_token(user.id) do
-      nil ->
-        nil
+      {:error, :invalid_credentials} ->
+        {:error, :invalid_credentials}
 
-      %Persistence.Users.Schema.User{} ->
+      {:ok, %Persistence.Users.Schema.User{}} ->
         user
         |> User.email_changeset(attrs)
         |> Repo.update()
@@ -83,10 +87,10 @@ defmodule Persistence.Users.Users do
       |> Repo.one()
 
     case verify_token(user.id) do
-      nil ->
-        nil
+      {:error, :invalid_credentials} ->
+        {:error, :invalid_credentials}
 
-      %Persistence.Users.Schema.User{} ->
+      {:ok, %Persistence.Users.Schema.User{}} ->
         user
         |> User.password_changeset(attrs)
         |> Repo.update()
@@ -108,6 +112,19 @@ defmodule Persistence.Users.Users do
     end
   end
 
+  @spec verify_token(Binary.t()) ::
+          %Persistence.Users.Schema.User{} | {:error, :invalid_credentials}
+  def verify_token(id) do
+    with query_token <- UserToken.by_user_and_contexts_query(id),
+         usertoken <- Repo.one(query_token),
+         query_token <- UserToken.verify_session_token_query(usertoken.token),
+         user <- Repo.one(query_token) do
+      {:ok, user}
+    else
+      nil -> {:error, :invalid_credentials}
+    end
+  end
+
   defp register_token(%Persistence.Users.Schema.User{id: id} = user) do
     UserToken
     |> from()
@@ -120,14 +137,5 @@ defmodule Persistence.Users.Users do
     |> Repo.insert()
 
     {:ok, user}
-  end
-
-  defp verify_token(id) do
-    with query_token <- UserToken.by_user_and_contexts_query(id),
-         usertoken <- Repo.one(query_token),
-         query_token <- UserToken.verify_session_token_query(usertoken.token),
-         user <- Repo.one(query_token) do
-      user
-    end
   end
 end

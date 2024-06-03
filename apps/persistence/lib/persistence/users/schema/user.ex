@@ -2,6 +2,8 @@ defmodule Persistence.Users.Schema.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Persistence.Stores.Schema.Store
+
   @type t :: %__MODULE__{
           id: Ecto.UUID.t(),
           first_name: String.t(),
@@ -21,8 +23,10 @@ defmodule Persistence.Users.Schema.User do
     field :cpf, :string
     field :email, :string
     field :password, :string, virtual: true, redact: true
-    field :hashed_password, :string, redact: true
+    field :hashed_password, :string
     field :confirmed_at, :naive_datetime
+
+    has_one(:stores, Store)
 
     timestamps(type: :utc_datetime)
   end

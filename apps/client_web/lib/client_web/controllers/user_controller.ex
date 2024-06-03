@@ -21,8 +21,6 @@ defmodule ClientWeb.UserController do
           "Could not create user with attributes #{inspect(params)}. Error: #{inspect(error)}"
         )
 
-        IO.inspect(error)
-
         error
     end
   end

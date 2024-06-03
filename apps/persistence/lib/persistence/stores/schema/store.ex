@@ -3,6 +3,8 @@ defmodule Persistence.Stores.Schema.Store do
 
   import Ecto.Changeset
 
+  alias Persistence.Users.Schema.User
+
   @type t :: %__MODULE__{
           id: Ecto.UUID.t(),
           name_store: String.t(),
@@ -12,10 +14,11 @@ defmodule Persistence.Stores.Schema.Store do
           number: Integer.t(),
           cep: String.t(),
           cnpj: String.t(),
-          phone: String.t()
+          phone: String.t(),
+          user_id: Ecto.UUID.t()
         }
 
-  @fields ~w(name_store description adress neighborhood number cep cnpj phone)a
+  @fields ~w(name_store description adress neighborhood number cep cnpj phone user_id)a
 
   @primary_key {:id, :binary_id, autogenerate: true}
   schema "stores" do
@@ -27,6 +30,9 @@ defmodule Persistence.Stores.Schema.Store do
     field(:cep, :string)
     field(:cnpj, :string)
     field(:phone, :string)
+    field(:user_id, :binary_id)
+
+    belongs_to(:users, User)
 
     timestamps()
   end
