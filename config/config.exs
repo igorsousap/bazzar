@@ -45,7 +45,7 @@ config :phoenix, :json_library, Jason
 
 config :client_web, ClientWeb.Guardian,
   issuer: "client_web",
-  secret_key: "3WPh219VYn0kZchBNY+orU1Eg9mRtM5yLRwUWq+L/sNMEypznRWy4PmrgPe5aW8t"
+  secret_key: "token"
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
