@@ -32,7 +32,7 @@ defmodule Persistence.Products.Schema.Product do
     field(:quantity, :integer)
     field(:picture, :string)
 
-    belongs_to(:stores, Store)
+    has_one(:stores, Store)
 
     timestamps()
   end
@@ -60,7 +60,6 @@ defmodule Persistence.Products.Schema.Product do
     |> foreign_key_constraint(:id_store, name: :products_id_store_fkey)
     |> validate_value()
     |> validate_quantity()
-    |> assoc_constraint(:stores)
   end
 
   def validate_value(changeset) do

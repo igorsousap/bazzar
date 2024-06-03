@@ -11,7 +11,7 @@ defmodule ClientWeb.SessionController do
         |> put_status(:unauthorized)
         |> json(%{error: "Invalid credentials"})
 
-      user ->
+      {:ok, user} ->
         {:ok, token, _claims} = Guardian.encode_and_sign(user)
         json(conn, %{token: token})
     end

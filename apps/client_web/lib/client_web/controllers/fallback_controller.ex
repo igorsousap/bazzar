@@ -45,6 +45,15 @@ defmodule ClientWeb.FallbackController do
     |> render(:error, layout: false, reason: "Not Found")
   end
 
+  def call(conn, {:error, :unauthorized}) do
+    Logger.error("Error invalid access")
+
+    conn
+    |> put_status(:unauthorized)
+    |> put_view(json: ClientWeb.Jsons.ErrorJson)
+    |> render(:error, layout: false, reason: "unauthorized")
+  end
+
   def call(conn, error) do
     Logger.error("Error fallback #{inspect(error)}")
 

@@ -32,7 +32,7 @@ defmodule Persistence.Stores.Schema.Store do
     field(:phone, :string)
     field(:user_id, :binary_id)
 
-    belongs_to(:users, User)
+    has_one(:users, User)
 
     timestamps()
   end
