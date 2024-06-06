@@ -38,17 +38,18 @@ defmodule Persistence.Stores.Schema.Store do
   end
 
   @doc """
+  Receive a store map to create a changeset
   Example
   iex> Persistence.Stores.Schema.Store.changeset(
           %{
-          name_store: "IgorStore",
-          description:  "Loja focada em vendas de roupa de academia",
-          adress: "Rua Antonio Nunes",
-          neighborhood: "Centro",
+          name_store: "Test Store",
+          description: "Store Description",
+          adress: "Street Test",
+          neighborhood: "City Center",
           number: 99,
           cep: "62010-140",
-          cnpj: "07941071000138",
-          phone: "889995955155"
+          cnpj: Brcpfcnpj.cnpj_generate(),
+          phone: "88999999999"
            })
   """
   @spec changeset(:__MODULE__.t(), map()) :: Ecto.Changeset.t()

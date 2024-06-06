@@ -73,7 +73,7 @@ defmodule ClientWeb.StoreController do
 
   def update(conn, params) do
     with {:ok, user} <- authentication(params),
-         {:ok, store} <- Stores.verify_id_store(user.id),
+         {:ok, store} <- Stores.verify_id_store_from_user_id(user.id),
          {:ok, store_updated} <- Stores.update_by_name_store(store.name_store, params) do
       conn
       |> put_status(:ok)

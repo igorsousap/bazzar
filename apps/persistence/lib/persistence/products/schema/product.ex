@@ -38,18 +38,19 @@ defmodule Persistence.Products.Schema.Product do
   end
 
   @doc """
+  Receive a product map and validate field and insert on the database
   Example
   iex> Persistence.Products.Schema.Product.changeset(
-          %{
-          product_name: "Blusa adidas",
-          description: "regata azul com simbolo branco",
-          cod_product: "7898357411232",
-          id_store: Ecto.UUID.generate(),
-          size: "xs",
-          value: 105.99,
-          quantity: 100,
-          picture: "www.linkimage.com"
-           })
+    %{
+      product_name: "T-Shirt Adidas",
+      description: "dryfit t-shirt",
+      cod_product: "7898357411232",
+      size: "xs",
+      id_store: Ecto.UUID.generate(),
+      value: 105.99,
+      quantity: 100,
+      picture: "www.linkimage.com"
+    }
   """
   @spec changeset(:__MODULE__.t(), map()) :: Ecto.Changeset.t()
   def changeset(product \\ %__MODULE__{}, attrs) do
@@ -62,14 +63,14 @@ defmodule Persistence.Products.Schema.Product do
     |> validate_quantity()
   end
 
-  def validate_value(changeset) do
+  defp validate_value(changeset) do
     validate_number(changeset, :value,
       greater_than_or_equal_to: 1,
       message: "must be greater than or equal to one"
     )
   end
 
-  def validate_quantity(changeset) do
+  defp validate_quantity(changeset) do
     validate_number(changeset, :quantity,
       greater_than_or_equal_to: 1,
       message: "must be greater than or equal to one"

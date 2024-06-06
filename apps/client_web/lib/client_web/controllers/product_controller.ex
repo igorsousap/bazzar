@@ -13,7 +13,7 @@ defmodule ClientWeb.ProductController do
 
   def create(conn, params) do
     with {:ok, user} <- authentication(params),
-         {:ok, store} <- Stores.verify_id_store(user.id),
+         {:ok, store} <- Stores.verify_id_store_from_user_id(user.id),
          {:ok, build_product} <- build_product_params(params),
          {:ok, product} <- Products.create(store.name_store, build_product) do
       conn
@@ -36,7 +36,7 @@ defmodule ClientWeb.ProductController do
 
   def products_by_store(conn, params) do
     with {:ok, user} <- authentication(params),
-         {:ok, store} <- Stores.verify_id_store(user.id),
+         {:ok, store} <- Stores.verify_id_store_from_user_id(user.id),
          {page, page_size} <- build_pagination(params["page"], params["page_size"]),
          products <- Products.get_all_products_store(store.name_store, page, page_size) do
       conn
@@ -59,7 +59,7 @@ defmodule ClientWeb.ProductController do
 
   def product_by_cod(conn, params) do
     with {:ok, user} <- authentication(params),
-         {:ok, _store} <- Stores.verify_id_store(user.id),
+         {:ok, _store} <- Stores.verify_id_store_from_user_id(user.id),
          product <- Products.get_by_cod_product(params["cod_product"]) do
       conn
       |> put_status(:ok)
@@ -81,7 +81,7 @@ defmodule ClientWeb.ProductController do
 
   def update(conn, params) do
     with {:ok, user} <- authentication(params),
-         {:ok, _store} <- Stores.verify_id_store(user.id),
+         {:ok, _store} <- Stores.verify_id_store_from_user_id(user.id),
          {:ok, product} <- Products.update(params["cod_product"], params) do
       conn
       |> put_status(:ok)
