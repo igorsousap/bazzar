@@ -26,4 +26,15 @@ defmodule Persistence.Factory do
       picture: "www.linkimage.com"
     }
   end
+
+  def user_factory do
+    %{
+      first_name: "First Name",
+      last_name: "Last Name",
+      cpf: Brcpfcnpj.cpf_generate(),
+      email: "test@email.com",
+      password: "Password123@",
+      confirmed_at: NaiveDateTime.local_now()
+    }
+  end
 end

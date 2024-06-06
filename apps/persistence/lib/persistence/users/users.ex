@@ -47,7 +47,7 @@ defmodule Persistence.Users.Users do
       iex> Persistence.Users.Users.get_user_by_email_and_password("test@email.com", "Password123@")
   """
   @spec get_user_by_email_and_password(String.t(), String.t()) ::
-          %Persistence.Users.Schema.User{} | nil
+          {:ok, %Persistence.Users.Schema.User{}} | nil
   def get_user_by_email_and_password(email, password)
       when is_binary(email) and is_binary(password) do
     user = Repo.get_by(User, email: email)
@@ -61,22 +61,30 @@ defmodule Persistence.Users.Users do
       iex> Persistence.Users.Users.change_user_email("94821895404", %{email: "test@email.com"})
   """
   @spec change_user_email(String.t(), map()) ::
-          %Persistence.Users.Schema.User{} | {:error, :invalid_credentials}
+          %Persistence.Users.Schema.User{}
+          | {:error, :invalid_credentials}
+          | {:error, :not_found}
+          | {:error, Ecto.Changeset.t()}
   def change_user_email(cpf, attrs) do
     user =
       User
       |> from()
       |> where([us], us.cpf == ^cpf)
-      |> Repo.one()
 
-    case verify_token(user.id) do
-      {:error, :invalid_credentials} ->
-        {:error, :invalid_credentials}
+    case Repo.one(user) do
+      nil ->
+        {:error, :not_found}
 
-      {:ok, %Persistence.Users.Schema.User{}} ->
-        user
-        |> User.email_changeset(attrs)
-        |> Repo.update()
+      user ->
+        case verify_token(user.id) do
+          {:error, :invalid_credentials} ->
+            {:error, :invalid_credentials}
+
+          {:ok, %Persistence.Users.Schema.User{}} ->
+            user
+            |> User.email_changeset(attrs)
+            |> Repo.update()
+        end
     end
   end
 
@@ -85,22 +93,31 @@ defmodule Persistence.Users.Users do
   ## Examples
       iex> Persistence.Users.Users.change_user_password("94821895404", %{password: "NewPassword123@"})
   """
-  @spec change_user_password(String.t(), map()) :: %Persistence.Users.Schema.User{} | nil
+  @spec change_user_password(String.t(), map()) ::
+          %Persistence.Users.Schema.User{}
+          | {:error, :invalid_credentials}
+          | {:error, :not_found}
+          | {:error, Ecto.Changeset.t()}
   def change_user_password(cpf, attrs) do
     user =
       User
       |> from()
       |> where([us], us.cpf == ^cpf)
-      |> Repo.one()
 
-    case verify_token(user.id) do
-      {:error, :invalid_credentials} ->
-        {:error, :invalid_credentials}
+    case Repo.one(user) do
+      nil ->
+        {:error, :not_found}
 
-      {:ok, %Persistence.Users.Schema.User{}} ->
-        user
-        |> User.password_changeset(attrs)
-        |> Repo.update()
+      user ->
+        case verify_token(user.id) do
+          {:error, :invalid_credentials} ->
+            {:error, :invalid_credentials}
+
+          {:ok, %Persistence.Users.Schema.User{}} ->
+            user
+            |> User.password_changeset(attrs)
+            |> Repo.update()
+        end
     end
   end
 
