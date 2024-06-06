@@ -29,6 +29,7 @@ defmodule Persistence.Users.Schema.UserToken do
   end
 
   @doc """
+  Creates the changeset to validate the insertion and usage of one token
     Example
     iex> Persistence.Users.Schema.UserToken.changeset(
       %{
@@ -46,23 +47,21 @@ defmodule Persistence.Users.Schema.UserToken do
   end
 
   @doc """
+    Creates a token do be used for a user
     Example
-    iex> Persistence.Users.Schema.UserToken.build_session_token(
-      %Persistence.Users.Schema.User{
-      id: Ecto.UUID.generate(),
-      first_name: "Igor",
-      last_name: "Sousa",
-      cpf: Brcpfcnpj.cpf_generate(),
-      email: "igorsousapinto140@gmail.com",
-      password: "Igorsousa123@",
-      confirmed_at: NaiveDateTime.local_now()
-       })
+    iex> Persistence.Users.Schema.UserToken.build_session_token("c9112a6b-8782-43dc-a2a2-62829f028a88")
   """
   @spec build_session_token(Binary.t()) :: map()
   def build_session_token(id) do
     token = :crypto.strong_rand_bytes(@rand_size)
     %{token: token, context: "session", user_id: id}
   end
+
+  @doc """
+    Query to verify if the token is valid to be used
+    Example
+    iex> Persistence.Users.Schema.UserToken.verify_session_token_query("2QÊ^  lsvk2oÑÝ3 ÔÈÁQ£+X*ÂõÂ<o 6N")
+  """
 
   @spec verify_session_token_query(Binary.t()) :: Ecto.Query.t()
   def verify_session_token_query(token) do
@@ -75,13 +74,23 @@ defmodule Persistence.Users.Schema.UserToken do
     query
   end
 
-  @spec by_token_and_context_query(Binary.t(), String.t()) :: Ecto.Query.t()
-  def by_token_and_context_query(token, context) do
-    from UserToken, where: [token: ^token, context: ^context]
-  end
-
+  @doc """
+    Query to find a token from a given id user
+    Example
+    iex> Persistence.Users.Schema.UserToken.by_user_and_contexts_query("c9112a6b-8782-43dc-a2a2-62829f028a88")
+  """
   @spec by_user_and_contexts_query(Binary.t()) :: Ecto.Query.t()
   def by_user_and_contexts_query(id) do
     from t in UserToken, where: t.user_id == ^id
+  end
+
+  @doc """
+    Query to find a user from a given token
+    Example
+    iex> Persistence.Users.Schema.UserToken.by_user_and_contexts_query("2QÊ^  lsvk2oÑÝ3 ÔÈÁQ£+X*ÂõÂ<o 6N")
+  """
+  @spec by_token_and_context_query(Binary.t(), String.t()) :: Ecto.Query.t()
+  def by_token_and_context_query(token, context) do
+    from UserToken, where: [token: ^token, context: ^context]
   end
 end

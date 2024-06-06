@@ -32,6 +32,7 @@ defmodule Persistence.Users.Schema.User do
   end
 
   @doc """
+  Creates the changeset to validate a user to be inserted on the database
   Example
   iex> Persistence.Users.Schema.User.changeset(
           %{
@@ -52,6 +53,7 @@ defmodule Persistence.Users.Schema.User do
   end
 
   @doc """
+  Creates the changeset to validate a email only a email to be changed and inserted on the database
   Example
   iex> Persistence.Users.Schema.User.email_changeset(
           %Persistence.Users.Schema.User{
@@ -76,6 +78,7 @@ defmodule Persistence.Users.Schema.User do
   end
 
   @doc """
+  Creates the changeset to validate only a password to be changed and inserted on the database
   Example
   iex> Persistence.Users.Schema.User.password_changeset(
           %Persistence.Users.Schema.User{
@@ -96,6 +99,20 @@ defmodule Persistence.Users.Schema.User do
     |> validate_password()
   end
 
+  @doc """
+  Receive a password and a struct user to validated if the password passed is valid compared to hased password
+  Example
+  iex> Persistence.Users.Schema.User.password_changeset(
+          %Persistence.Users.Schema.User{
+          first_name: "Igor",
+          last_name: "Sousa",
+          cpf: Brcpfcnpj.cpf_generate(),
+          email: "igorsousapinto140@gmail.com",
+          password: "Igorsousa123@",
+          confirmed_at: NaiveDateTime.local_now()
+           },
+            %{password: "igorsousa@123"})
+  """
   def valid_password?(%Persistence.Users.Schema.User{hashed_password: hashed_password}, password)
       when is_binary(hashed_password) and byte_size(password) > 0 do
     Bcrypt.verify_pass(password, hashed_password)

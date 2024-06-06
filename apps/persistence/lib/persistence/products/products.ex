@@ -8,17 +8,18 @@ defmodule Persistence.Products.Products do
 
   @doc """
   Example
+  Receive the name store to insert the product
   iex> Persistence.Products.Products.create(
-          "IgorStore",
+          "Test Store",
           %{
-          product_name: "Blusa adidas",
-          description: "regata azul com simbolo branco",
-          cod_product: "7898357411232",
-          size: "xs",
-          value: 105.99,
-          quantity: 100,
-          picture: "www.linkimage.com"
-           })
+      product_name: "T-Shirt Adidas",
+      description: "dryfit t-shirt",
+      cod_product: "7898357411232",
+      size: "xs",
+      value: 105.99,
+      quantity: 100,
+      picture: "www.linkimage.com"
+    })
   """
   @spec create(String.t(), map()) :: {:ok, Product.t()} | {:error, Ecto.Changeset.t()}
   def create(name_store, attrs) do
@@ -31,8 +32,9 @@ defmodule Persistence.Products.Products do
   end
 
   @doc """
+  Receive a store name and returns all products from store pagineted
   Example
-  iex> Persistence.Products.Products.get_all_products_store("IgorStore")
+  iex> Persistence.Products.Products.get_all_products_store("Test Store")
   """
   @spec get_all_products_store(String.t(), Integer.t(), Integer.t()) :: List.t() | []
   def get_all_products_store(name_store, page, page_size) do
@@ -48,6 +50,7 @@ defmodule Persistence.Products.Products do
   end
 
   @doc """
+  Receive a cod product end returns the product
   Example
   iex> Persistence.Products.Products.get_by_cod_product("7898357411232")
   """
@@ -67,6 +70,7 @@ defmodule Persistence.Products.Products do
   end
 
   @doc """
+  Receive a cod product and a nre atribute to be updated
   Example
   iex> Persistence.Products.Products.update("7898357411232", %{quantity: 20})
   """
