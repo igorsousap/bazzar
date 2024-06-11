@@ -39,13 +39,13 @@ defmodule ClientWeb.StoreController do
       stores ->
         conn
         |> put_status(:ok)
-        |> render(:store_index, layout: false, store: stores)
+        |> render(:store_pagination, layout: false, store: stores)
     end
   end
 
   def get_store_by_name(conn, params) do
     case Stores.get_store_by_name(params["name_store"]) do
-      nil ->
+      {:error, :not_found} ->
         Logger.error("Could not find store with attributes #{inspect(params)}.")
 
         {:error, :not_found}
@@ -59,7 +59,7 @@ defmodule ClientWeb.StoreController do
 
   def get_store_by_cnpj(conn, params) do
     case Stores.get_store_by_cnpj(params["cnpj"]) do
-      nil ->
+      {:error, :not_found} ->
         Logger.error("Could not find store with attributes #{inspect(params)}.")
 
         {:error, :not_found}
@@ -122,8 +122,6 @@ defmodule ClientWeb.StoreController do
   end
 
   defp authentication(params) do
-    IO.inspect(params)
-
     with {:ok, user} <- Users.get_user_by_email_and_password(params["email"], params["password"]),
          {:ok, _user} = Users.verify_token(user.id) do
       {:ok, user}

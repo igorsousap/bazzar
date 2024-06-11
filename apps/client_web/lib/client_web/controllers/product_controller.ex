@@ -41,7 +41,7 @@ defmodule ClientWeb.ProductController do
          products <- Products.get_all_products_store(store.name_store, page, page_size) do
       conn
       |> put_status(:ok)
-      |> render(:product_index, layout: false, product: products)
+      |> render(:product_pagination, layout: false, product: products)
     else
       nil ->
         Logger.error("Could not get products, invalid credentials access.}")
@@ -60,7 +60,7 @@ defmodule ClientWeb.ProductController do
   def product_by_cod(conn, params) do
     with {:ok, user} <- authentication(params),
          {:ok, _store} <- Stores.verify_id_store_from_user_id(user.id),
-         product <- Products.get_by_cod_product(params["cod_product"]) do
+         {:ok, product} <- Products.get_by_cod_product(params["cod_product"]) do
       conn
       |> put_status(:ok)
       |> render(:product, layout: false, product: product)

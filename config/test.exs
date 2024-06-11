@@ -18,4 +18,4 @@ config :persistence, Persistence.Repo,
   hostname: "localhost",
   database: "persistence_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
-  pool_size: System.schedulers_online() * 5
+  pool_size: System.schedulers_online() * 10

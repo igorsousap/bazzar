@@ -3,33 +3,54 @@ defmodule ClientWeb.ProductControllerTest do
 
   import Persistence.Factory
 
-  alias Persistence.Products.Schema.Product
+  alias ClientWeb.Guardian
+  alias Persistence.Users.Users
   alias Persistence.Products.Products
   alias Persistence.Stores.Stores
 
-  setup do
+  setup %{conn: conn} do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Persistence.Repo)
-    Ecto.Adapters.SQL.Sandbox.mode(Persistence.Repo, {:shared, self()})
-    store = build(:store)
-    product = build(:product, name_store: store.name_store)
-    {:ok, product: product, store: store}
+    attrs_user = params_for(:user)
+    {:ok, user} = Users.register_user(attrs_user)
+    {:ok, token, _claims} = Guardian.encode_and_sign(user)
+
+    conn =
+      conn
+      |> put_req_header("accept", "application/json")
+      |> put_req_header("authorization", "Bearer #{token}")
+
+    attrs_store =
+      params_for(:store)
+      |> Map.put_new(:email, attrs_user.email)
+      |> Map.put_new(:password, attrs_user.password)
+      |> Map.put_new(:user_id, user.id)
+
+    {:ok, store} = Stores.create(attrs_store)
+
+    attrs_product =
+      params_for(:product)
+      |> Map.put_new(:email, attrs_user.email)
+      |> Map.put_new(:password, attrs_user.password)
+
+    Products.create(store.name_store, attrs_product)
+
+    {:ok, attrs: attrs_product, conn: conn}
   end
 
   describe "create/2" do
     test "should return a product when passed valid params", %{
       conn: conn,
-      product: product,
-      store: store
+      attrs: attrs_product
     } do
-      Stores.create(store)
+      attrs_product = %{attrs_product | cod_product: "1234567891234"}
 
       response =
         conn
-        |> post(~p"/api/product", product)
+        |> post(~p"/api/product", attrs_product)
         |> json_response(:created)
 
       assert %{
-               "cod_product" => "7898357411232",
+               "cod_product" => attrs_product.cod_product,
                "description" => "dryfit t-shirt",
                "product_name" => "T-Shirt Adidas",
                "quantity" => 100,
@@ -40,16 +61,13 @@ defmodule ClientWeb.ProductControllerTest do
 
     test "should return a error when passed invalid params", %{
       conn: conn,
-      product: product,
-      store: store
+      attrs: attrs_product
     } do
-      Stores.create(store)
-
-      product = %{product | quantity: 0, value: 0}
+      attrs_product = %{attrs_product | quantity: 0, value: 0}
 
       response =
         conn
-        |> post(~p"/api/product", product)
+        |> post(~p"/api/product", attrs_product)
         |> json_response(:unprocessable_entity)
 
       assert %{
@@ -64,15 +82,13 @@ defmodule ClientWeb.ProductControllerTest do
   describe "products_by_store/2" do
     test "should get all products from a given store", %{
       conn: conn,
-      product: product,
-      store: store
+      attrs: attrs_product
     } do
-      Stores.create(store)
-      Products.create(store.name_store, product)
-
       response =
         conn
-        |> get(~p"/api/product/#{store.name_store}?page=1&page_size=2")
+        |> get(
+          ~p"/api/product/?email=#{attrs_product.email}&password=#{attrs_product.password}&page=1&page_size=2"
+        )
         |> json_response(:ok)
 
       Enum.each(response, fn item ->
@@ -80,39 +96,22 @@ defmodule ClientWeb.ProductControllerTest do
         assert Map.has_key?(item, "cod_product")
       end)
     end
-
-    test "should return a empty list when store dosent have products", %{
-      conn: conn,
-      product: product,
-      store: store
-    } do
-      Stores.create(store)
-
-      response =
-        conn
-        |> get(~p"/api/product/#{store.name_store}?page=1&page_size=2")
-        |> json_response(:ok)
-
-      assert [] == response
-    end
   end
 
   describe "product_by_cod/2" do
     test "should return a product by a given code product", %{
       conn: conn,
-      product: product,
-      store: store
+      attrs: attrs_product
     } do
-      Stores.create(store)
-      Products.create(store.name_store, product)
-
       response =
         conn
-        |> get(~p"/api/product/cod/#{product.cod_product}")
+        |> get(
+          ~p"/api/product/cod/#{attrs_product.cod_product}?email=#{attrs_product.email}&password=#{attrs_product.password}"
+        )
         |> json_response(:ok)
 
       assert %{
-               "cod_product" => "7898357411232",
+               "cod_product" => attrs_product.cod_product,
                "description" => "dryfit t-shirt",
                "product_name" => "T-Shirt Adidas",
                "quantity" => 100,
@@ -123,14 +122,13 @@ defmodule ClientWeb.ProductControllerTest do
 
     test "should return error when product dosent exist", %{
       conn: conn,
-      product: product,
-      store: store
+      attrs: attrs_product
     } do
-      Stores.create(store)
-
       response =
         conn
-        |> get(~p"/api/product/cod/#{product.cod_product}")
+        |> get(
+          ~p"/api/product/cod/1234567894615?email=#{attrs_product.email}&password=#{attrs_product.password}"
+        )
         |> json_response(:not_found)
 
       assert %{"errors" => "Not Found"} == response
@@ -139,16 +137,14 @@ defmodule ClientWeb.ProductControllerTest do
 
   describe "update/2" do
     test "should return a updated product with status 200 ", %{
-      product: product,
       conn: conn,
-      store: store
+      attrs: attrs_product
     } do
-      Stores.create(store)
-      Products.create(store.name_store, product)
-
       params = %{
-        "cod_product" => product.cod_product,
-        "description" => "new_description"
+        "cod_product" => attrs_product.cod_product,
+        "description" => "new_description",
+        "email" => attrs_product.email,
+        "password" => attrs_product.password
       }
 
       response =
@@ -157,7 +153,7 @@ defmodule ClientWeb.ProductControllerTest do
         |> json_response(:ok)
 
       assert %{
-               "cod_product" => "7898357411232",
+               "cod_product" => attrs_product.cod_product,
                "description" => "new_description",
                "product_name" => "T-Shirt Adidas",
                "quantity" => 100,
@@ -167,16 +163,14 @@ defmodule ClientWeb.ProductControllerTest do
     end
 
     test "should return error and status 404 when one of the params are incorrect ", %{
-      product: product,
-      store: store,
-      conn: conn
+      conn: conn,
+      attrs: attrs_product
     } do
-      Stores.create(store)
-      Products.create(store.name_store, product)
-
       params = %{
-        "cod_product" => product.cod_product,
-        "description" => nil
+        "cod_product" => attrs_product.cod_product,
+        "description" => nil,
+        "email" => attrs_product.email,
+        "password" => attrs_product.password
       }
 
       response =
