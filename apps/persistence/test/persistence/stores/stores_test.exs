@@ -1,5 +1,5 @@
 defmodule Persistence.Stores.StoresTest do
-  use Persistence.DataCase, async: false
+  use Persistence.DataCase, async: true
 
   import Persistence.Factory
 
@@ -10,7 +10,6 @@ defmodule Persistence.Stores.StoresTest do
   @moduletag :capture_log
 
   setup do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Repo)
     # User Create
     attrs_user = params_for(:user)
     {:ok, user} = Users.register_user(attrs_user)
