@@ -1,5 +1,5 @@
 defmodule ClientWeb.StoreControllerTest do
-  use ClientWeb.ConnCase, async: false
+  use ClientWeb.ConnCase, async: true
 
   import Persistence.Factory
 

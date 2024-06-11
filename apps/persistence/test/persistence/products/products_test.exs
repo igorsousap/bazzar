@@ -1,5 +1,5 @@
 defmodule Persistence.Products.ProductsTest do
-  use Persistence.DataCase, async: false
+  use Persistence.DataCase, async: true
 
   import Persistence.Factory
 
@@ -11,7 +11,6 @@ defmodule Persistence.Products.ProductsTest do
   @moduletag :capture_log
 
   setup do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Repo)
     # User Create
     attrs_user = params_for(:user)
     {:ok, user} = Users.register_user(attrs_user)
@@ -74,7 +73,7 @@ defmodule Persistence.Products.ProductsTest do
 
   describe "get_by_cod_product/1" do
     test "should return a product from a given code product", %{product: product} do
-      assert %Persistence.Products.Schema.Product{} =
+      assert {:ok, %Persistence.Products.Schema.Product{}} =
                Products.get_by_cod_product(product.cod_product)
     end
 
