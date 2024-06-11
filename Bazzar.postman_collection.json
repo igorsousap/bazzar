@@ -12,11 +12,21 @@
 				{
 					"name": "Create Product",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjbGllbnRfd2ViIiwiZXhwIjoxNzE5ODQxNjM4LCJpYXQiOjE3MTc0MjI0MzgsImlzcyI6ImNsaWVudF93ZWIiLCJqdGkiOiJlOWFjOTkxYS0xNmNiLTRiNTktYWI2Ni03YjllN2I5MmZhMzgiLCJuYmYiOjE3MTc0MjI0MzcsInN1YiI6ImM5MTEyYTZiLTg3ODItNDNkYy1hMmEyLTYyODI5ZjAyOGE4OCIsInR5cCI6ImFjY2VzcyJ9.j8CjyRu1lW1WYtE6lBPpsPrR2qBt4MeRoQOhW16hLpq-w0Tsm_Xb00bCP4evAmvrqzhofcon2d3Ts6US89-CmA",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": " {        \"name_store\": \"laranjaStore\",\n          \"product_name\": \"Blusa adidas\",\n          \"description\": \"regata azul com simbolo branco\",\n          \"cod_product\": \"7898357411250\",\n          \"size\": \"xs\",\n          \"value\": 1,\n          \"quantity\": 1,\n          \"picture\": \"www.linkimage.com\"\n           }",
+							"raw": " {\n          \"product_name\": \"Blusa adidas\",\n          \"description\": \"regata azul com simbolo branco\",\n          \"cod_product\": \"7898357411260\",\n          \"size\": \"xs\",\n          \"value\": 1,\n          \"quantity\": 1,\n          \"picture\": \"www.linkimage.com\",\n          \"email\": \"igorsousapinto140@gmail.com\", \n          \"password\": \"Igorsousa143@\"\n           }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -39,11 +49,31 @@
 				},
 				{
 					"name": "Get all products store",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjbGllbnRfd2ViIiwiZXhwIjoxNzE5ODQxNjM4LCJpYXQiOjE3MTc0MjI0MzgsImlzcyI6ImNsaWVudF93ZWIiLCJqdGkiOiJlOWFjOTkxYS0xNmNiLTRiNTktYWI2Ni03YjllN2I5MmZhMzgiLCJuYmYiOjE3MTc0MjI0MzcsInN1YiI6ImM5MTEyYTZiLTg3ODItNDNkYy1hMmEyLTYyODI5ZjAyOGE4OCIsInR5cCI6ImFjY2VzcyJ9.j8CjyRu1lW1WYtE6lBPpsPrR2qBt4MeRoQOhW16hLpq-w0Tsm_Xb00bCP4evAmvrqzhofcon2d3Ts6US89-CmA",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "",
+								"variables": ""
+							}
+						},
 						"url": {
-							"raw": "localhost:4000/api/product/laranjaStore?page=1&page_size=2",
+							"raw": "localhost:4000/api/product/?email=igorsousapinto140@gmail.com&password=Igorsousa123@&page=1&page_size=2",
 							"host": [
 								"localhost"
 							],
@@ -51,9 +81,17 @@
 							"path": [
 								"api",
 								"product",
-								"laranjaStore"
+								""
 							],
 							"query": [
+								{
+									"key": "email",
+									"value": "igorsousapinto140@gmail.com"
+								},
+								{
+									"key": "password",
+									"value": "Igorsousa123@"
+								},
 								{
 									"key": "page",
 									"value": "1"
@@ -70,10 +108,20 @@
 				{
 					"name": "Get cod product",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjbGllbnRfd2ViIiwiZXhwIjoxNzE5ODQxNjM4LCJpYXQiOjE3MTc0MjI0MzgsImlzcyI6ImNsaWVudF93ZWIiLCJqdGkiOiJlOWFjOTkxYS0xNmNiLTRiNTktYWI2Ni03YjllN2I5MmZhMzgiLCJuYmYiOjE3MTc0MjI0MzcsInN1YiI6ImM5MTEyYTZiLTg3ODItNDNkYy1hMmEyLTYyODI5ZjAyOGE4OCIsInR5cCI6ImFjY2VzcyJ9.j8CjyRu1lW1WYtE6lBPpsPrR2qBt4MeRoQOhW16hLpq-w0Tsm_Xb00bCP4evAmvrqzhofcon2d3Ts6US89-CmA",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:4000/api/product/laranjaStore?page=1&page_size=2",
+							"raw": "localhost:4000/api/product/cod/7898357411260?email=igorsousapinto140@gmail.com&password=Igorsousa123@",
 							"host": [
 								"localhost"
 							],
@@ -81,16 +129,17 @@
 							"path": [
 								"api",
 								"product",
-								"laranjaStore"
+								"cod",
+								"7898357411260"
 							],
 							"query": [
 								{
-									"key": "page",
-									"value": "1"
+									"key": "email",
+									"value": "igorsousapinto140@gmail.com"
 								},
 								{
-									"key": "page_size",
-									"value": "2"
+									"key": "password",
+									"value": "Igorsousa123@"
 								}
 							]
 						}
@@ -100,11 +149,21 @@
 				{
 					"name": "update product",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjbGllbnRfd2ViIiwiZXhwIjoxNzE5ODQxNjM4LCJpYXQiOjE3MTc0MjI0MzgsImlzcyI6ImNsaWVudF93ZWIiLCJqdGkiOiJlOWFjOTkxYS0xNmNiLTRiNTktYWI2Ni03YjllN2I5MmZhMzgiLCJuYmYiOjE3MTc0MjI0MzcsInN1YiI6ImM5MTEyYTZiLTg3ODItNDNkYy1hMmEyLTYyODI5ZjAyOGE4OCIsInR5cCI6ImFjY2VzcyJ9.j8CjyRu1lW1WYtE6lBPpsPrR2qBt4MeRoQOhW16hLpq-w0Tsm_Xb00bCP4evAmvrqzhofcon2d3Ts6US89-CmA",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\"cod_product\": \"7898357411243\",\n\"description\":  \"roupa vermelha com azul\"\n}",
+							"raw": "{\n\"cod_product\": \"7898357411260\",\n\"description\":  \"roupa vermelha com azul\",\n\"email\": \"igorsousapinto140@gmail.com\", \n          \"password\": \"Igorsousa123@\"\n\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -133,11 +192,39 @@
 				{
 					"name": "Create Store",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjbGllbnRfd2ViIiwiZXhwIjoxNzE5ODQxNjM4LCJpYXQiOjE3MTc0MjI0MzgsImlzcyI6ImNsaWVudF93ZWIiLCJqdGkiOiJlOWFjOTkxYS0xNmNiLTRiNTktYWI2Ni03YjllN2I5MmZhMzgiLCJuYmYiOjE3MTc0MjI0MzcsInN1YiI6ImM5MTEyYTZiLTg3ODItNDNkYy1hMmEyLTYyODI5ZjAyOGE4OCIsInR5cCI6ImFjY2VzcyJ9.j8CjyRu1lW1WYtE6lBPpsPrR2qBt4MeRoQOhW16hLpq-w0Tsm_Xb00bCP4evAmvrqzhofcon2d3Ts6US89-CmA",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjbGllbnRfd2ViIiwiZXhwIjoxNzE5NzgxMDE1LCJpYXQiOjE3MTczNjE4MTUsImlzcyI6ImNsaWVudF93ZWIiLCJqdGkiOiJiMDYyOTc4My1lYmJkLTRkY2EtOGQwYy0zODZhOTc5ODNkNDUiLCJuYmYiOjE3MTczNjE4MTQsInN1YiI6ImM5MTEyYTZiLTg3ODItNDNkYy1hMmEyLTYyODI5ZjAyOGE4OCIsInR5cCI6ImFjY2VzcyJ9.zPWSE61rJDCKXnNX8YEKl2bDe9pmDlaeZm-Fctt6SYTEXc_Avfy8xoB9aVtcF_iDjjBj-Wkrqwq547IweTBQ-A",
+								"type": "text"
+							},
+							{
+								"key": "assings",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "password",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\"name_store\": \"laranjaStore\",\n\"description\":  \"Loja focada em vendas de roupa de academia\",\n\"adress\": \"Rua Antonio Nunes\",\n\"neighborhood\": \"Centro\",\n\"number\": 99,\n\"cep\": \"62010-140\",\n\"cnpj\": \"41156753000178\",\n\"phone\": \"88999595515\"\n}",
+							"raw": "{\n\"name_store\": \"laranjaStore\",\n\"description\":  \"Loja focada em vendas de roupa de academia\",\n\"adress\": \"Rua Antonio Nunes\",\n\"neighborhood\": \"Centro\",\n\"number\": 99,\n\"cep\": \"62010-140\",\n\"cnpj\": \"41156753000178\",\n\"phone\": \"88999595515\",\n\"email\": \"igorsousapinto140@gmail.com\", \n\"password\": \"Igorsousa123@\"\n\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -153,6 +240,18 @@
 							"path": [
 								"api",
 								"store"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "igorsousapinto140@gmail.com",
+									"disabled": true
+								},
+								{
+									"key": "password",
+									"value": "Igorsousa123@",
+									"disabled": true
+								}
 							]
 						}
 					},
@@ -161,11 +260,21 @@
 				{
 					"name": "update Store",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjbGllbnRfd2ViIiwiZXhwIjoxNzE5ODQxNjM4LCJpYXQiOjE3MTc0MjI0MzgsImlzcyI6ImNsaWVudF93ZWIiLCJqdGkiOiJlOWFjOTkxYS0xNmNiLTRiNTktYWI2Ni03YjllN2I5MmZhMzgiLCJuYmYiOjE3MTc0MjI0MzcsInN1YiI6ImM5MTEyYTZiLTg3ODItNDNkYy1hMmEyLTYyODI5ZjAyOGE4OCIsInR5cCI6ImFjY2VzcyJ9.j8CjyRu1lW1WYtE6lBPpsPrR2qBt4MeRoQOhW16hLpq-w0Tsm_Xb00bCP4evAmvrqzhofcon2d3Ts6US89-CmA",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\"name_store\": \"azulStore\",\n\"description\":  \"Loja focada em roupa\"\n}",
+							"raw": "{\n\"description\":  \"new_description\",\n\"email\": \"igorsousapinto140@gmail.com\",\n\"password\": \"Igorsousa123@\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -204,14 +313,14 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:4000/api/store/?page=1&page_size=10",
+							"raw": "localhost:4000/api/stores/?page=1&page_size=10",
 							"host": [
 								"localhost"
 							],
 							"port": "4000",
 							"path": [
 								"api",
-								"store",
+								"stores",
 								""
 							],
 							"query": [
@@ -234,7 +343,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:4000/api/store-name/azulStore",
+							"raw": "localhost:4000/api/store-name/laranjaStore",
 							"host": [
 								"localhost"
 							],
@@ -242,7 +351,7 @@
 							"path": [
 								"api",
 								"store-name",
-								"azulStore"
+								"laranjaStore"
 							]
 						}
 					},
@@ -263,6 +372,207 @@
 								"api",
 								"store-cnpj",
 								"30802149000155"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"first_name\": \"Igor\",\n          \"last_name\": \"Sousa\",\n          \"cpf\": \"73776711140\",\n          \"email\": \"igorsousapinto140@gmail.com\",\n          \"password\": \"Igorsousa123@\"\n           }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/api/user/",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create New Token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"igorsousapinto140@gmail.com\",\n  \"password\": \"Igorsousa123@\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/api/user/new-token",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"user",
+								"new-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/api/user/?email=igorsousapinto140@gmail.com&password=Igorsousa123@",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"user",
+								""
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "igorsousapinto140@gmail.com"
+								},
+								{
+									"key": "password",
+									"value": "Igorsousa123@"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Email",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cpf\": \"73776711140\",\n    \"email\": \"igor_email@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/api/user/email",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"user",
+								"email"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Password",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cpf\": \"73776711140\",\n    \"password\": \"Igorsousa123@\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/api/user/",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Session",
+			"item": [
+				{
+					"name": "Create Session",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjbGllbnRfd2ViIiwiZXhwIjoxNzE5NzgxMDE1LCJpYXQiOjE3MTczNjE4MTUsImlzcyI6ImNsaWVudF93ZWIiLCJqdGkiOiJiMDYyOTc4My1lYmJkLTRkY2EtOGQwYy0zODZhOTc5ODNkNDUiLCJuYmYiOjE3MTczNjE4MTQsInN1YiI6ImM5MTEyYTZiLTg3ODItNDNkYy1hMmEyLTYyODI5ZjAyOGE4OCIsInR5cCI6ImFjY2VzcyJ9.zPWSE61rJDCKXnNX8YEKl2bDe9pmDlaeZm-Fctt6SYTEXc_Avfy8xoB9aVtcF_iDjjBj-Wkrqwq547IweTBQ-A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"email\": \"igorsousapinto140@gmail.com\",\n          \"password\": \"Igorsousa123@\"\n           }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/api/session/",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"session",
+								""
 							]
 						}
 					},
