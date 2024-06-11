@@ -10,7 +10,7 @@ defmodule ClientWeb.Jsons.ProductJson do
     }
   end
 
-  def product_index(%{product: product}) do
+  def product_pagination(%{product: product}) do
     Enum.map(product, fn product ->
       %{
         product_name: product.product_name,

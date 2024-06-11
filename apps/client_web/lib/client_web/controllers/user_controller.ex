@@ -32,7 +32,7 @@ defmodule ClientWeb.UserController do
 
         {:error, :not_found}
 
-      user ->
+      {:ok, user} ->
         conn
         |> put_status(:ok)
         |> render(:user, layout: false, user: user)
@@ -43,7 +43,7 @@ defmodule ClientWeb.UserController do
     case params do
       %{"password" => password} ->
         case Users.change_user_password(params["cpf"], %{"password" => password}) do
-          nil ->
+          {:error, :not_found} ->
             Logger.error("Could not find user with attributes #{inspect(params)}.")
 
             {:error, :not_found}

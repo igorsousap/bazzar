@@ -38,15 +38,21 @@ defmodule Persistence.Products.Products do
   """
   @spec get_all_products_store(String.t(), Integer.t(), Integer.t()) :: List.t() | []
   def get_all_products_store(name_store, page, page_size) do
-    %Persistence.Stores.Schema.Store{id: id} = Stores.get_store_by_name(name_store)
+    case Stores.get_store_by_name(name_store) do
+      {:error, :not_found} ->
+        {:error, :not_found}
 
-    Product
-    |> from()
-    |> order_by([pt], desc: pt.inserted_at)
-    |> limit(^page_size)
-    |> offset((^page - 1) * ^page_size)
-    |> where([pt], pt.id_store == ^id)
-    |> Repo.all()
+      store ->
+        %Persistence.Stores.Schema.Store{id: id} = store
+
+        Product
+        |> from()
+        |> order_by([pt], desc: pt.inserted_at)
+        |> limit(^page_size)
+        |> offset((^page - 1) * ^page_size)
+        |> where([pt], pt.id_store == ^id)
+        |> Repo.all()
+    end
   end
 
   @doc """
@@ -64,8 +70,11 @@ defmodule Persistence.Products.Products do
       |> Repo.one()
 
     case product do
-      nil -> {:error, :not_found}
-      product -> product
+      nil ->
+        {:error, :not_found}
+
+      product ->
+        {:ok, product}
     end
   end
 
@@ -80,7 +89,7 @@ defmodule Persistence.Products.Products do
       {:error, :not_found} ->
         {:error, :not_found}
 
-      product ->
+      {:ok, product} ->
         product
         |> Product.changeset(attrs)
         |> Repo.update()

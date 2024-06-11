@@ -6,7 +6,7 @@ defmodule ClientWeb.Jsons.StoreJson do
     }
   end
 
-  def store_index(%{store: store}) do
+  def store_pagination(%{store: store}) do
     Enum.map(store, fn x ->
       %{
         name_store: x.name_store,

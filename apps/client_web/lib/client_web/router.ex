@@ -20,16 +20,16 @@ defmodule ClientWeb.Router do
     pipe_through :api
 
     get "/stores", StoreController, :index
-    get "/store-name/:name_store", StoreController, :get_store_by_name
-    get "/store-cnpj/:cnpj", StoreController, :get_store_by_cnpj
+    get "/search/stores/:name_store", StoreController, :get_store_by_name
+    get "/search/stores/cnpj/:cnpj", StoreController, :get_store_by_cnpj
   end
 
   scope "/api/product", ClientWeb do
     pipe_through [:api, :auth]
 
     post "/", ProductController, :create
-    get "/store", ProductController, :products_by_store
-    get "/store/cod/:cod_product", ProductController, :product_by_cod
+    get "/", ProductController, :products_by_store
+    get "/cod/:cod_product", ProductController, :product_by_cod
     put "/", ProductController, :update
   end
 

@@ -3,61 +3,167 @@ defmodule ClientWeb.StoreControllerTest do
 
   import Persistence.Factory
 
+  alias ClientWeb.Guardian
   alias Persistence.Stores.Schema.Store
   alias Persistence.Stores.Stores
+  alias Persistence.Users.Users
 
   @moduletag :capture_log
 
-  setup do
+  setup %{conn: conn} do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Persistence.Repo)
-    Ecto.Adapters.SQL.Sandbox.mode(Persistence.Repo, {:shared, self()})
+    attrs_user = params_for(:user)
+    {:ok, user} = Users.register_user(attrs_user)
+    {:ok, token, _claims} = Guardian.encode_and_sign(user)
 
-    store = build(:store)
-    {:ok, store: store}
+    conn =
+      conn
+      |> put_req_header("accept", "application/json")
+      |> put_req_header("authorization", "Bearer #{token}")
+
+    attrs_store =
+      params_for(:store)
+      |> Map.put_new(:email, attrs_user.email)
+      |> Map.put_new(:password, attrs_user.password)
+      |> Map.put_new(:user_id, user.id)
+
+    Stores.create(attrs_store)
+
+    {:ok, attrs: attrs_store, conn: conn, user: user}
   end
 
   describe "create/2" do
-    test "should return 201 and store details", %{store: store, conn: conn} do
+    test "should return 201 and store details", %{attrs: attrs_store, conn: conn} do
+      attrs_store =
+        %{
+          attrs_store
+          | cnpj: Brcpfcnpj.cnpj_generate(),
+            name_store: "new_name_store"
+        }
+
       response =
         conn
-        |> post(~p"/api/store", store)
+        |> post(~p"/api/store", attrs_store)
         |> json_response(:created)
 
-      assert %{"cnpj" => store.cnpj, "name_store" => "teststore"} == response
+      assert %{"cnpj" => attrs_store.cnpj, "name_store" => attrs_store.name_store} == response
     end
 
-    test "should return 422 if passed invalid params", %{store: _store, conn: conn} do
-      store = build(:store, cnpj: "411567530001788", cep: "620101404")
+    test "should return 422 if passed invalid params", %{attrs: attrs_store, conn: conn} do
+      attrs_store =
+        %{
+          attrs_store
+          | cnpj: "123456789123"
+        }
 
       response =
         conn
-        |> post(~p"/api/store", store)
+        |> post(~p"/api/store", attrs_store)
         |> json_response(:unprocessable_entity)
 
-      assert %{"errors" => %{"cep" => ["invalid cep"], "cnpj" => ["invalid cnpj"]}} == response
+      assert %{"errors" => %{"cnpj" => ["invalid cnpj"]}} == response
     end
 
-    test "should return 422 if required params not given", %{store: _store, conn: conn} do
-      store = build(:store, cnpj: nil, cep: nil)
+    test "should return 422 if required params not given", %{attrs: attrs_store, conn: conn} do
+      attrs_store =
+        %{
+          attrs_store
+          | cnpj: nil
+        }
 
       response =
         conn
-        |> post(~p"/api/store", store)
+        |> post(~p"/api/store", attrs_store)
         |> json_response(:unprocessable_entity)
 
-      assert %{"errors" => %{"cep" => ["can't be blank"], "cnpj" => ["can't be blank"]}} ==
-               response
+      assert %{"errors" => %{"cnpj" => ["can't be blank"]}} == response
+    end
+  end
+
+  describe "get_store_by_name/2" do
+    test "should return a store with status 200 ", %{attrs: attrs_store, conn: conn} do
+      response =
+        conn
+        |> get(~p"/api/search/stores/#{attrs_store.name_store}")
+        |> json_response(:ok)
+
+      assert %{"cnpj" => attrs_store.cnpj, "name_store" => "teststore"} == response
+    end
+
+    test "should error and status 422 when not found ", %{conn: conn} do
+      response =
+        conn
+        |> get(~p"/api/search/stores/RandomStore")
+        |> json_response(:not_found)
+
+      assert %{"errors" => "Not Found"} == response
+    end
+  end
+
+  describe "get_store_by_cnpj/2" do
+    test "should return a store with status 200 ", %{attrs: attrs_store, conn: conn} do
+      response =
+        conn
+        |> get(~p"/api/search/stores/cnpj/#{attrs_store.cnpj}")
+        |> json_response(:ok)
+
+      assert %{"cnpj" => attrs_store.cnpj, "name_store" => "teststore"} == response
+    end
+
+    test "should error and status 422 when not found ", %{conn: conn} do
+      response =
+        conn
+        |> get(~p"/api/search/stores/cnpj/1234567898784")
+        |> json_response(:not_found)
+
+      assert %{"errors" => "Not Found"} == response
+    end
+  end
+
+  describe "update/2" do
+    test "should return a updted store with status 200 ", %{attrs: attrs_store, conn: conn} do
+      params = %{
+        "name_store" => attrs_store.name_store,
+        "description" => "new_description",
+        "email" => attrs_store.email,
+        "password" => attrs_store.password
+      }
+
+      response =
+        conn
+        |> put(~p"/api/store", params)
+        |> json_response(:ok)
+
+      assert %{"cnpj" => attrs_store.cnpj, "name_store" => "teststore"} == response
+    end
+
+    test "should error and status 404 when one of the params are incorrect ", %{
+      attrs: attrs_store,
+      conn: conn
+    } do
+      params = %{
+        "name_store" => attrs_store.name_store,
+        "description" => nil,
+        "email" => attrs_store.email,
+        "password" => attrs_store.password
+      }
+
+      response =
+        conn
+        |> put(~p"/api/store", params)
+        |> json_response(:unprocessable_entity)
+
+      assert %{"errors" => %{"description" => ["can't be blank"]}} == response
     end
   end
 
   describe "index/2" do
     test "should return all stores in a list with status 200 pagineted", %{
-      store: _store,
       conn: conn
     } do
       response =
         conn
-        |> get(~p"/api/store/?page=1&page_size=5")
+        |> get(~p"/api/stores/?page=1&page_size=1")
         |> json_response(:ok)
 
       Enum.each(response, fn item ->
@@ -68,113 +174,16 @@ defmodule ClientWeb.StoreControllerTest do
     end
 
     test "should return error when not find any store", %{
-      store: _store,
       conn: conn
     } do
       Persistence.Repo.delete_all(Store)
 
       response =
         conn
-        |> get(~p"/api/store/?page=1&page_size=5")
+        |> get(~p"/api/stores/?page=1&page_size=5")
         |> json_response(:ok)
 
       assert [] == response
-    end
-  end
-
-  describe "get_store_by_name/2" do
-    test "should return a stores with status 200 ", %{
-      store: store,
-      conn: conn
-    } do
-      Stores.create(store)
-
-      response =
-        conn
-        |> get(~p"/api/store-name/#{store.name_store}")
-        |> json_response(:ok)
-
-      assert %{"cnpj" => store.cnpj, "name_store" => "teststore"} == response
-    end
-
-    test "should error and status 422 when not found ", %{
-      store: store,
-      conn: conn
-    } do
-      response =
-        conn
-        |> get(~p"/api/store-name/#{store.name_store}")
-        |> json_response(:not_found)
-
-      assert %{"errors" => "Not Found"} == response
-    end
-  end
-
-  describe "get_store_by_cnpj/2" do
-    test "should return a store with status 200 ", %{
-      store: store,
-      conn: conn
-    } do
-      Stores.create(store)
-
-      response =
-        conn
-        |> get(~p"/api/store-cnpj/#{store.cnpj}")
-        |> json_response(:ok)
-
-      assert %{"cnpj" => store.cnpj, "name_store" => "teststore"} == response
-    end
-
-    test "should error and status 422 when not found ", %{
-      store: store,
-      conn: conn
-    } do
-      response =
-        conn
-        |> get(~p"/api/store-cnpj/#{store.cnpj}")
-        |> json_response(:not_found)
-
-      assert %{"errors" => "Not Found"} == response
-    end
-  end
-
-  describe "update/2" do
-    test "should return a updted store with status 200 ", %{
-      store: store,
-      conn: conn
-    } do
-      Stores.create(store)
-
-      params = %{
-        "name_store" => store.name_store,
-        "description" => "new_description"
-      }
-
-      response =
-        conn
-        |> put(~p"/api/store", params)
-        |> json_response(:ok)
-
-      assert %{"cnpj" => store.cnpj, "name_store" => "teststore"} == response
-    end
-
-    test "should error and status 404 when one of the params are incorrect ", %{
-      store: store,
-      conn: conn
-    } do
-      Stores.create(store)
-
-      params = %{
-        "name_store" => store.name_store,
-        "description" => nil
-      }
-
-      response =
-        conn
-        |> put(~p"/api/store", params)
-        |> json_response(:unprocessable_entity)
-
-      assert %{"errors" => %{"description" => ["can't be blank"]}} == response
     end
   end
 end

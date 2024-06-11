@@ -59,6 +59,7 @@ defmodule Persistence.Stores.Schema.Store do
     |> validate_required(@fields)
     |> unique_constraint([:name_store], name: :store_name_index)
     |> unique_constraint([:cnpj], name: :store_cnpj_index)
+    |> foreign_key_constraint(:user_id)
     |> validate_cnpj()
     |> validate_format(:cep, ~r/^\d{5}-\d{3}$/, message: "invalid cep")
     |> validate_format(:phone, ~r/^\d{2}\d{4,5}\d{4}$/, message: "invalid phone")

@@ -48,6 +48,8 @@ defmodule Persistence.Users.Schema.User do
   def changeset(user \\ %__MODULE__{}, attrs) do
     user
     |> cast(attrs, @fields)
+    |> unique_constraint([:cpf], name: :users_cpf_index)
+    |> unique_constraint([:email], name: :users_email_index)
     |> validate_email()
     |> validate_password()
   end
